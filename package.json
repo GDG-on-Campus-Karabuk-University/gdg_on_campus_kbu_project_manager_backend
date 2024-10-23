@@ -1,0 +1,34 @@
+{
+  "name": "gdg_on_campus_kbu_project_manager_backend",
+  "version": "1.0.0",
+  "description": "Express - Teknofest Teams API",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GDG-on-Campus-Karabuk-University/gdg_on_campus_kbu_project_manager_backend.git"
+  },
+  "keywords": [
+    "Express",
+    "Rest",
+    "API",
+    "GDG",
+    "KBU"
+  ],
+  "author": "Yusuf Gökkaya",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GDG-on-Campus-Karabuk-University/gdg_on_campus_kbu_project_manager_backend/issues"
+  },
+  "homepage": "https://github.com/GDG-on-Campus-Karabuk-University/gdg_on_campus_kbu_project_manager_backend#readme",
+  "dependencies": {
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
