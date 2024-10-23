@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/GDG-on-Campus-Karabuk-University/gdg_on_campus_kbu_project_manager_backend#readme",
   "dependencies": {
+    "dotenv": "^16.4.5",
     "express": "^4.21.1"
   },
   "devDependencies": {
