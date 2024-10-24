@@ -1,6 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const connectDatabase = require("./helpers/database/connectDatabase.js");
+const customErrorHandler = require("./middlewares/errors/customErrorHandler.js");
 const routers = require("./routers/index.js")
 
 // Enviroment Variables
@@ -21,6 +22,10 @@ const PORT = process.env.PORT;
 // Routers Middleware
 
 app.use("/api", routers);
+
+// Error Handler
+
+app.use(customErrorHandler);
 
 
 app.listen(PORT, () => {
