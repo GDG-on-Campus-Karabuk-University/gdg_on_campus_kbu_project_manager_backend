@@ -6,12 +6,12 @@ const connectDatabase = () => {
     To clarify things, there were at least 4 methods we could use, but since it does work without them, i decided not to */
 
     mongoose.connect(process.env.MONGO_URI)
-    .then(() => {
-        console.log("MongoDb Connection Successful");
-    })
-    .catch(err => {
-        console.error(err);
-    })
+        .then(() => {
+            console.log("MongoDb Connection Successful");
+        })
+        .catch(err => {
+            console.error(err);
+        })
 }
 
 module.exports = connectDatabase;

@@ -7,7 +7,7 @@ const routers = require("./routers/index.js")
 // Enviroment Variables
 
 dotenv.config({
-    path : "./config/env/config.env"
+    path: "./config/env/config.env"
 });
 
 
