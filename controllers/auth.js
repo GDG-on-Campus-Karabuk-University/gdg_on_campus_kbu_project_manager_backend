@@ -53,6 +53,22 @@ const logout = asyncErrorWrapper(async (req, res, next) => {
             success: true,
             message: "Logout Successful"
         })
+});
+
+const imageUpload = asyncErrorWrapper(async (req, res, next) => {
+    const user = await User.findByIdAndUpdate(req.user.id, {
+        "profile_image": req.savedProfileImage
+    }, {
+        new: true,
+        runValidators: true
+    })
+
+    res.status(200)
+    .json({
+        success: true,
+        message: "Image Upload Successful",
+        data: user
+    })
 })
 
 const getUser = (req, res, next) => {
@@ -69,5 +85,6 @@ module.exports = {
     register,
     login,
     getUser,
-    logout
+    logout,
+    imageUpload
 }

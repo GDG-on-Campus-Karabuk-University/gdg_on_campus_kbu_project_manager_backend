@@ -2,6 +2,9 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDatabase = require("./helpers/database/connectDatabase.js");
 const customErrorHandler = require("./middlewares/errors/customErrorHandler.js");
+const path = require("path");
+
+
 const routers = require("./routers/index.js")
 
 // Enviroment Variables
@@ -30,6 +33,10 @@ app.use("/api", routers);
 // Error Handler
 
 app.use(customErrorHandler);
+
+// Static Files
+
+app.use(express.static(path.join(__dirname, "public")));
 
 
 app.listen(PORT, () => {
