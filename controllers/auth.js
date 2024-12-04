@@ -65,18 +65,18 @@ const imageUpload = asyncErrorWrapper(async (req, res, next) => {
     })
 
     res.status(200)
-    .json({
-        success: true,
-        message: "Image Upload Successful",
-        data: user
-    })
+        .json({
+            success: true,
+            message: "Image Upload Successful",
+            data: user
+        })
 })
 
 const forgotPassword = asyncErrorWrapper(async (req, res, next) => {
 
     const resetEmail = req.body.email;
 
-    const user = await User.findOne({email: resetEmail});
+    const user = await User.findOne({ email: resetEmail });
 
     if (!user) {
         return next(new CustomError("There is no user with that email", 400));
@@ -104,10 +104,10 @@ const forgotPassword = asyncErrorWrapper(async (req, res, next) => {
         });
 
         return res.status(200)
-        .json({
-            success: true,
-            message: "Token Sent to Your Email"
-        })
+            .json({
+                success: true,
+                message: "Token Sent to Your Email"
+            })
     } catch (err) {
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
@@ -119,10 +119,10 @@ const forgotPassword = asyncErrorWrapper(async (req, res, next) => {
 });
 
 const resetPassword = asyncErrorWrapper(async (req, res, next) => {
-    
-    const {resetPasswordToken} = req.query;
 
-    const {password} = req.body;
+    const { resetPasswordToken } = req.query;
+
+    const { password } = req.body;
 
     if (!resetPasswordToken) {
         return next(new CustomError("Please provide a valid token", 400));
@@ -130,7 +130,7 @@ const resetPassword = asyncErrorWrapper(async (req, res, next) => {
 
     let user = await User.findOne({
         resetPasswordToken: resetPasswordToken,
-        resetPasswordExpire: {$gt : Date.now()}
+        resetPasswordExpire: { $gt: Date.now() }
     });
 
     if (!user) {
@@ -144,10 +144,10 @@ const resetPassword = asyncErrorWrapper(async (req, res, next) => {
     await user.save();
 
     return res.status(200)
-    .json({
-        success: true,
-        message: "Reset Password Process Successful"
-    })
+        .json({
+            success: true,
+            message: "Reset Password Process Successful"
+        })
 })
 
 const getUser = (req, res, next) => {
@@ -169,10 +169,10 @@ const editDetails = asyncErrorWrapper(async (req, res, next) => {
     });
 
     return res.status(200)
-    .json({
-        success: true,
-        user
-    })
+        .json({
+            success: true,
+            user
+        })
 })
 
 module.exports = {

@@ -60,8 +60,12 @@ const UserSchema = new Schema({
     },
     resetPasswordExpire: {
         type: Date
+    },
+    team: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Team",
+        default: null
     }
-
 })
 
 UserSchema.methods.generateJwtFromUser = function () {
@@ -80,14 +84,14 @@ UserSchema.methods.generateJwtFromUser = function () {
     return token;
 }
 
-UserSchema.methods.getResetPasswordTokenFromUser = function() {
+UserSchema.methods.getResetPasswordTokenFromUser = function () {
     const randomHexString = crypto.randomBytes(15).toString("hex");
-    const {RESET_PASSWORD_EXPIRE} = process.env;
+    const { RESET_PASSWORD_EXPIRE } = process.env;
 
     const resetPasswordToken = crypto
-    .createHash("SHA256")
-    .update(randomHexString)
-    .digest("hex");
+        .createHash("SHA256")
+        .update(randomHexString)
+        .digest("hex");
 
     this.resetPasswordToken = resetPasswordToken;
     this.resetPasswordExpire = Date.now() + parseInt(RESET_PASSWORD_EXPIRE);
