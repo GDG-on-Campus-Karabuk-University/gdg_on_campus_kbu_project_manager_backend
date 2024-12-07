@@ -36,20 +36,29 @@ const UserSchema = new Schema({
         default: Date.now
     },
     title: {
-        type: String
+        type: String,
+        maxlength: [50, "Title cannot exceed 50 characters"],
+        default: "New User"
     },
     about: {
-        type: String
+        type: String,
+        maxlength: [500, "About section cannot exceed 500 characters"],
+        default: "This user hasn't written anything about themselves yet."
     },
     place: {
-        type: String
+        type: String,
+        default: "Unknown",
+        maxlength: [100, "Place cannot exceed 100 characters"]
     },
     website: {
-        type: String
+        type: String,
+        match: [/^(https?:\/\/)?([\w\-]+)\.([a-z]{2,6}\.?)(\/[\w\-]*)*\/?$/,
+            "Please provide a valid URL"],
+        default: null
     },
     profile_image: {
         type: String,
-        defualt: "default.jpg"
+        default: "default.jpg"
     },
     blocked: {
         type: Boolean,
@@ -64,7 +73,77 @@ const UserSchema = new Schema({
     team: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Team",
+        default: null,
+        index: true
+    },
+    bio: {
+        type: String,
+        maxlength: [1000, "Biography cannot exceed 1000 characters"],
+        default: "No biograph provided"
+    },
+    skills: {
+        type: [String],
+        validate: [arr => arr.length <= 10, "Skills cannot exceed 10 items"],
+        default: []
+    },
+    social_links: {
+        twitter: {
+            type: String,
+            match: [
+                /^(https?:\/\/)?(www\.)?twitter\.com\/[a-zA-Z0-9_]{1,15}$/,
+                "Please provide a valid Twitter URL"
+            ],
+            default: null
+        },
+        linkedin: {
+            type: String,
+            match: [
+                /^(https?:\/\/)?(www\.)?twitter\.com\/[a-zA-Z0-9_]{1,15}$/,
+                "Please provide a valid Twitter URL"
+            ],
+            default: null
+        },
+        github: {
+            type: String,
+            match: [
+                /^(https?:\/\/)?(www\.)?twitter\.com\/[a-zA-Z0-9_]{1,15}$/,
+                "Please provide a valid Twitter URL"
+            ],
+            default: null
+        },
+    },
+    interests: {
+        type: [String],
+        validate: [arr => arr.length <= 10, "Skills cannot exceed 10 items"],
+        default: []
+    },
+    // date_of_birth: {
+    //     type: Date,
+    //     validate: {
+    //         validator: function(value) {
+    //             const today = new Date();
+    //             const age = today.getFullYear() - value.getFullYear();
+    //             return age >= 13;
+    //         },
+    //         message: "User must be at least 13 years old"
+    //     },
+    //     default: null
+    // },
+    phone: {
+        type: String,
+        match: [/^\+?[1-9]\d{1,14}$/, "Please provide a valid phone number"],
         default: null
+    },
+    badges: {
+        type: [
+            {
+                name: { type: String, required: true },
+                type: { type: String, required: true, enum: ["team", "club", "leader", "special"] },
+                icon: { type: String, default: "default_badge.png" },
+                issuedAt: { type: Date, default: Date.now }
+            }
+        ],
+        default: []
     }
 })
 
