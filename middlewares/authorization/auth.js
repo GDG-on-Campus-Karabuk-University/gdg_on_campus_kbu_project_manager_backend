@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const User = require("../../models/User")
 const asyncErrorWrapper = require("express-async-handler");
 const { isTokenIncluded, getAccessTokenFromHeader } = require("../../helpers/authorization/tokenHelpers");
-const expressAsyncHandler = require("express-async-handler");
 
 
 const getAccessToRoute = (req, res, next) => {

@@ -4,10 +4,9 @@ const CustomError = require("../helpers/error/CustomError");
 const asyncErrorWrapper = require("express-async-handler");
 
 const createTeam = asyncErrorWrapper(async (req, res, next) => {
-    const { name } = req.body;
-    const leaderId = req.user.id;
+    const { teamName, leaderId, ...optionalFields } = req.body;
 
-    const existingTeam = await Team.findOne({ name });
+    const existingTeam = await Team.findOne({ teamName });
 
     if (existingTeam) {
         return next(new CustomError("Team name is already in use", 400));
@@ -19,11 +18,17 @@ const createTeam = asyncErrorWrapper(async (req, res, next) => {
         return next(new CustomError("No leader found with that name", 400));
     }
 
+    // console.log(leader, leader.team)
+
     if (leader.team) {
         return next(new CustomError("Leader already has a team", 400));
     }
 
-    const team = await Team.create({ name, leader: leaderId });
+    const team = await Team.create({
+        teamName,
+        leader: leaderId,
+        ...optionalFields
+    });
 
     leader.team = team._id;
 
@@ -111,6 +116,23 @@ const removeMemberFromTeam = asyncErrorWrapper(async (req, res, next) => {
     });
 })
 
+const uploadTeamProfilePic = asyncErrorWrapper(async (req, res, next) => {
+    
+    const team = await Team.findByIdAndUpdate(req.params.teamId, {
+        "team_image": req.savedProfileImage
+    }, {
+        new: true,
+        runValidators: true
+    })
+    
+    res.status(200)
+    .json({
+        success: true,
+        message: "Team Picture Upload Successful",
+        data: team
+    })
+})
+
 // Team Speculations can be directed to a new file
 
 const getSingleTeam = asyncErrorWrapper(async (req, res, next) => {
@@ -135,10 +157,40 @@ const getAllTeams = asyncErrorWrapper(async (req, res, next) => {
         })
 })
 
+const updateTeamInfo = asyncErrorWrapper(async (req, res, next) => {
+    const { teamId } = req.params;
+    const { description, projects } = req.body;
+
+    const team = await Team.findByIdAndUpdate(
+        teamId,
+        {
+            ...(description && { description }),
+            ...(projects && { projects }),
+        },
+        {
+            new: true,
+            runValidators: true
+        }
+    );
+
+    if (!team) {
+        return next(new CustomError("Team not found", 404));
+    }
+
+    res.status(200)
+    .json({
+        success: true,
+        message: "Team Updated Successfully",
+        data: team
+    })
+})
+
 module.exports = {
     createTeam,
     addMemberToTeam,
     removeMemberFromTeam,
+    uploadTeamProfilePic,
     getSingleTeam,
-    getAllTeams
+    getAllTeams,
+    updateTeamInfo
 }
