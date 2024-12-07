@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const TeamSchema = new Schema({
 
-    teamName: {
+    name: {
         type: String,
         required: true,
         unique: true

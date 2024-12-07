@@ -74,13 +74,22 @@ const addMemberToTeam = asyncErrorWrapper(async (req, res, next) => {
     await team.save();
 
     user.team = teamId;
+
+    const teamBadge = {
+        name: `Member of ${team.name}`,
+        type: "team",
+        icon: "team_member_badge.png"
+    };
+
+    user.badges.push(teamBadge);
     await user.save();
 
     return res.status(200)
         .json({
             success: true,
-            message: "Member successfully added to the team",
-            team
+            message: "Member successfully added to the team and given a badge",
+            team,
+            teamBadge
         })
 })
 
@@ -101,36 +110,45 @@ const removeMemberFromTeam = asyncErrorWrapper(async (req, res, next) => {
     if (!team.members.some(member => member._id.toString() === userId.toString())) {
         return next(new CustomError("User is not in this team", 404));
     }
-    
+
     team.members = team.members.filter(member => member._id.toString() !== userId.toString());
 
     user.team = null;
+
+    const teamBadgeIndex = user.badges.findIndex(
+        badge => badge.name === `Member of ${team.name}`
+    );
+
+    if (teamBadgeIndex !== -1) {
+        user.badges.splice(teamBadgeIndex, 1);
+    }
 
     await team.save();
     await user.save();
 
     return res.status(200)
-    .json({
-        success: true,
-        message: "User successfully removed from the team"
-    });
+        .json({
+            success: true,
+            message: "User successfully removed from the team",
+            user
+        });
 })
 
 const uploadTeamProfilePic = asyncErrorWrapper(async (req, res, next) => {
-    
+
     const team = await Team.findByIdAndUpdate(req.params.teamId, {
         "team_image": req.savedProfileImage
     }, {
         new: true,
         runValidators: true
     })
-    
+
     res.status(200)
-    .json({
-        success: true,
-        message: "Team Picture Upload Successful",
-        data: team
-    })
+        .json({
+            success: true,
+            message: "Team Picture Upload Successful",
+            data: team
+        })
 })
 
 // Team Speculations can be directed to a new file
@@ -145,7 +163,7 @@ const getSingleTeam = asyncErrorWrapper(async (req, res, next) => {
             success: true,
             team
         })
-}) 
+})
 
 const getAllTeams = asyncErrorWrapper(async (req, res, next) => {
     const teams = await Team.find();
@@ -178,11 +196,75 @@ const updateTeamInfo = asyncErrorWrapper(async (req, res, next) => {
     }
 
     res.status(200)
-    .json({
-        success: true,
-        message: "Team Updated Successfully",
-        data: team
-    })
+        .json({
+            success: true,
+            message: "Team Updated Successfully",
+            data: team
+        })
+})
+
+// addBadgeToUser fonksiyonunda yalnızca speacial tipteki rozetler kullanılmalıdır!!!
+const addBadgeToUser = asyncErrorWrapper(async (req, res, next) => {
+    const { userId } = req.params;
+    const { name, type, icon } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+        return next(new CustomError("User not found", 404));
+    }
+
+    const existingBadge = user.badges.find((badge) => badge.name === badgeName);
+    if (existingBadge) {
+        return next(new CustomError("This badge is already assigned to the user", 400));
+    }
+
+    if (!name || !type || !icon) {
+        return next(new CustomError("Badge details are incomplete", 400));
+    }
+
+    const badge = {
+        name,
+        type,
+        icon
+    }
+
+    user.badges.push(badge);
+    await user.save();
+
+    return res.status(200)
+        .json({
+            success: true,
+            message: `${name} badge is successfully added to the user`,
+            badge
+        })
+})
+
+const removeBadgeFromUser = asyncErrorWrapper(async (req, res, next) => {
+    const { userId } = req.params;
+    const { badgeName } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+        return next(new CustomError("User not found", 404));
+    }
+
+    const badgeIndex = user.badges.findIndex((badge) => badge.name === badgeName);
+
+    if (badgeIndex === -1) {
+        return next(new CustomError("Badge not found on this user", 404));
+    }
+
+    user.badges.splice(badgeIndex, 1);
+    await user.save();
+
+    return res.status(200)
+        .json({
+            success: true,
+            message: "Badge successfully removed from this user",
+            badges: user.badges
+        })
 })
 
 module.exports = {
@@ -192,5 +274,7 @@ module.exports = {
     uploadTeamProfilePic,
     getSingleTeam,
     getAllTeams,
-    updateTeamInfo
+    updateTeamInfo,
+    addBadgeToUser,
+    removeBadgeFromUser
 }
