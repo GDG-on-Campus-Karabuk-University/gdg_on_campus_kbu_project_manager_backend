@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socket.IO Chat</title>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    #chat {
+      margin-top: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+    .message {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Socket.IO Chat</h1>
+
+  <!-- Oda seçimi -->
+  <label for="room">Oda Adı:</label>
+  <input type="text" id="room" placeholder="Oda adı girin" />
+  <button id="joinRoom">Odaya Katıl</button>
+
+  <!-- Mesajlaşma kısmı -->
+  <div id="chat"></div>
+
+  <input type="text" id="message" placeholder="Mesajınızı yazın..." />
+  <button id="sendMessage">Gönder</button>
+
+  <script nonce="random-nonce">
+    const socket = io();
+
+    const roomInput = document.getElementById("room");
+    const joinRoomButton = document.getElementById("joinRoom");
+    const chatDiv = document.getElementById("chat");
+    const messageInput = document.getElementById("message");
+    const sendMessageButton = document.getElementById("sendMessage");
+
+    let currentRoom = "";
+
+    // Odaya katılma
+    joinRoomButton.addEventListener("click", () => {
+      const roomName = roomInput.value.trim();
+      if (roomName) {
+        socket.emit("joinRoom", roomName);
+        currentRoom = roomName;
+        chatDiv.innerHTML += `<div class="message">Odaya katıldınız: ${roomName}</div>`;
+      }
+    });
+
+    // Mesaj gönderme
+    sendMessageButton.addEventListener("click", () => {
+      const message = messageInput.value.trim();
+      if (message && currentRoom) {
+        socket.emit("chatMessage", message, currentRoom);
+        messageInput.value = ""; // Mesaj kutusunu temizle
+      }
+    });
+
+    // Mesaj alma
+    socket.on("chatMessage", (msg) => {
+      chatDiv.innerHTML += `<div class="message">${msg}</div>`;
+      chatDiv.scrollTop = chatDiv.scrollHeight; // Otomatik kaydırma
+    });
+  </script>
+</body>
+</html>
