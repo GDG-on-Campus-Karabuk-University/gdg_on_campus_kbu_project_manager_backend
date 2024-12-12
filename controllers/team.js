@@ -32,6 +32,14 @@ const createTeam = asyncErrorWrapper(async (req, res, next) => {
 
     leader.team = team._id;
 
+    const teamBadge = {
+        name: `Member of ${team.name}`,
+        type: "team",
+        icon: "team_member_badge.png"
+    };
+
+    leader.badges.push(teamBadge);
+
     await leader.save();
 
     res.status(200)
