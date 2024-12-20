@@ -2,13 +2,15 @@ const express = require("express");
 const { createTeam, addMemberToTeam, removeMemberFromTeam, getSingleTeam, getAllTeams, updateTeamInfo } = require("../controllers/team.js");
 const { getAccessToRoute } = require("../middlewares/authorization/auth.js");
 const { checkTeamExist } = require("../middlewares/database/databaseErrorHelpers.js");
-const { isTeamLeaderOrAdmin } = require("../middlewares/authorization/teamAuth.js");
+const { isTeamLeaderOrAdmin } = require("../middlewares/authorization/team.js");
 const { uploadTeamProfilePic } = require("../controllers/team.js");
 const upload = require("../middlewares/libraries/profileImageUpload.js");
 const router = express.Router();
 
 router.get("/", getAllTeams);
 router.get("/:id", checkTeamExist, getSingleTeam);
+
+router.use(getAccessToRoute);
 router.post("/create", getAccessToRoute, createTeam);
 
 

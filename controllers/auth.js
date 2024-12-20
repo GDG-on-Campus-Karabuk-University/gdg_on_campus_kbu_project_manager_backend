@@ -87,18 +87,111 @@ const forgotPassword = asyncErrorWrapper(async (req, res, next) => {
 
     console.log(resetPasswordToken);
 
-    const resetPasswordUrl = `http:127.0.0.1:5000/api/auth/resetpassword?resetPasswordToken=${resetPasswordToken}`;
+    const resetPasswordUrl = `http://127.0.0.1:5000/api/auth/resetpassword?resetPasswordToken=${resetPasswordToken}`;
 
     const emailTemplate = `
-        <h3>Reset Your Password</h3>
-        <p> This <a href = '${resetPasswordUrl}' target = '_blank'>link</a> will expire in an hour</p>
-    `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Şifre Sıfırlama</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .email-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4A90E2;
+            margin-bottom: 10px;
+        }
+        .title {
+            color: #2c3e50;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+        .content {
+            margin-bottom: 25px;
+            color: #555;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #4A90E2;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            margin: 20px 0;
+        }
+        .warning {
+            font-size: 13px;
+            color: #666;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="logo">🔐 Güvenlik Bildirimi</div>
+        </div>
+        
+        <div class="title">Şifre Sıfırlama Talebi</div>
+        
+        <div class="content">
+            <p>Merhaba,</p>
+            <p>Hesabınız için bir şifre sıfırlama talebinde bulunuldu. Şifrenizi sıfırlamak için aşağıdaki butona tıklayabilirsiniz:</p>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="${resetPasswordUrl}" class="button" target="_blank">Şifremi Sıfırla</a>
+        </div>
+        
+        <div class="warning">
+            <p>⚠️ Bu link 1 saat süreyle geçerlidir ve yalnızca bir kez kullanılabilir.</p>
+            <p>Eğer bu talebi siz yapmadıysanız, bu e-postayı görmezden gelebilirsiniz.</p>
+        </div>
+        
+        <div class="footer">
+            <p>Bu otomatik bir e-postadır, lütfen yanıtlamayınız.</p>
+            <p>© ${new Date().getFullYear()} Tüm hakları saklıdır.</p>
+        </div>
+    </div>
+</body>
+</html>
+`;
 
     try {
         await sendEmail({
             from: process.env.SMTP_USER,
             to: resetEmail,
-            subject: "Reset Your Password",
+            subject: "Şifre Sıfırlama",
             html: emailTemplate
         });
 

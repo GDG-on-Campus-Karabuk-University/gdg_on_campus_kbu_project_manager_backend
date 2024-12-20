@@ -43,6 +43,10 @@ const TeamSchema = new Schema({
     team_image: {
         type: String,
         default: "default.png"
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
     // Advisors, rel to organizations and school groups
 })
